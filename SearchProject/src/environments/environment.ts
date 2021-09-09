@@ -3,7 +3,11 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  GAPI_CLIENT_ID: "885756955127-15nknebl6kq2e92d1ovd2um355jmuoi8.apps.googleusercontent.com",
+  GAPI_API_KEY: "AIzaSyC8aCmFhegA8YtygAVccDPddN7aJ-POYwU",
+  GAPI_DRIVE_DISCOVERY_DOCS: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
+  GAPI_DRIVE_SCOPES: "https://www.googleapis.com/auth/drive.metadata.readonly"
 };
 
 /*
