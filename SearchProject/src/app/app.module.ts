@@ -6,14 +6,14 @@ import { AppComponent } from './app.component';
 import { GoogleApiService } from './google-api.service';
 import { MainComponent } from './main/main.component';
 import { AuthComponent } from './auth/auth.component';
-import { LoadingComponent } from './loading/loading.component';
+import { CrawlerComponent } from './crawler/crawler.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MainComponent,
     AuthComponent,
-    LoadingComponent
+    CrawlerComponent
   ],
   imports: [
     BrowserModule,

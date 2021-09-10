@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 
@@ -10,12 +10,15 @@ export class AuthComponent {
 
   constructor(
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    private ngZone: NgZone
   ) { }
 
   SingIn() {
     this.auth.SingIn().then(() => {
-      this.router.navigate(["main"]);
+      this.ngZone.run(() => {
+        this.router.navigate(["crawler"])
+      });
     });
   }
 }
