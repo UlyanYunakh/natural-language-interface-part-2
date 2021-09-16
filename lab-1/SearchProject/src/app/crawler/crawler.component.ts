@@ -10,7 +10,7 @@ export class CrawlerComponent implements OnInit {
   constructor(private harvester: СrawlerService) { }
 
   ngOnInit(): void {
-    this.harvester.GetFilesNames();
+    this.harvester.GetFiles();
   }
 
 }
