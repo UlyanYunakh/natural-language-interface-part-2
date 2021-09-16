@@ -5,17 +5,34 @@ declare var gapi: any;
   providedIn: 'root'
 })
 export class СrawlerService {
+  public FileIterator: Generator | undefined;
   private filesList: Array<any> | undefined;
 
   constructor() { }
 
-  public GetFiles() {
-    this.GetFilesFirstPage().then(() => {
-      this.filesList!.forEach(element => {
-        console.log(element.name);
+  public GetFiles(): Promise<any> {
+    return this.GetFilesFirstPage().then(() => {
+      this.FileIterator = this.GeneratorFunction();
+      return new Promise((resolve) => {
+        resolve(true);
       });
     });
   }
+
+  private *GeneratorFunction() {
+    for (var i = 0; i < this.filesList!.length; i++) {
+      yield i;
+    }
+  }
+
+  // public H() {
+  //   gapi.client.drive.files.export({
+  //     fileId: "element.id",
+  //     mimeType: 'text/plain'
+  //   }).then((response: any) => {
+
+  //   })
+  // }
 
   private GetFilesFirstPage(): Promise<any> {
     this.filesList = new Array();
