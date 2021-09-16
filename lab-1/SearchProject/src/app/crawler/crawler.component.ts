@@ -10,7 +10,13 @@ export class CrawlerComponent implements OnInit {
   constructor(private harvester: СrawlerService) { }
 
   ngOnInit(): void {
-    this.harvester.GetFiles();
+    this.harvester.GetFiles().then(() => {
+      var currFileNumber = this.harvester.FileIterator?.next();
+      while (!currFileNumber?.done) {
+        console.log(currFileNumber?.value);
+        currFileNumber = this.harvester.FileIterator?.next();
+      }
+    });
   }
 
 }
