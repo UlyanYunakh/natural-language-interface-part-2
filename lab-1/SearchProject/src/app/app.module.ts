@@ -7,6 +7,7 @@ import { GoogleApiService } from './google-api.service';
 import { MainComponent } from './main/main.component';
 import { AuthComponent } from './auth/auth.component';
 import { CrawlerComponent } from './crawler/crawler.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { CrawlerComponent } from './crawler/crawler.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [GoogleApiService],
   bootstrap: [AppComponent]
