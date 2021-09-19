@@ -22,24 +22,24 @@ export class СrawlerService {
 
     yield ["Getting docs from Google Drive...", loadingPoints];
     await this.GetDocs();
-    var docsCount = this.repo.Files.length;
+    var docsCount = this.repo.Docs.length;
 
 
     yield [`Preparing docs (0/${docsCount})`, loadingPoints];
     var number = 1;
     var point = 100 / docsCount;
-    for (var file of this.repo.Files) {
-      await this.ReadFile(file);
+    for (var doc of this.repo.Docs) {
+      await this.ReadDoc(doc);
       yield [`Preparing docs (${number}/${docsCount})`, loadingPoints += point];
       number++;
     }
 
     for (var word of this.repo.AllWords) {
-      await this.CalculateIdf(word);
+      await this.CalculateWordIdf(word);
     }
 
-    for (var file of this.repo.Files) {
-      await this.CalculateLenght(file);
+    for (var doc of this.repo.Docs) {
+      await this.CalculateDocLenght(doc);
     }
 
     return true;
@@ -47,14 +47,14 @@ export class СrawlerService {
 
   private GetDocs(): Promise<boolean> {
     return new Promise(async resolve => {
-      await this.GetFilesFirstPage();
+      await this.GetFirstPageWithDocs();
       resolve(true);
     });
   }
 
-  private CalculateLenght(file: any): Promise<boolean> {
+  private CalculateDocLenght(doc: any): Promise<boolean> {
     return new Promise(resolve => {
-      var words = this.repo.GetWordsInFile(file.id);
+      var words = this.repo.GetWordsInDoc(doc.id);
       var sum = 0;
 
       for (var word of words) {
@@ -62,37 +62,37 @@ export class СrawlerService {
       }
 
       var lenght = Math.sqrt(sum);
-      this.repo.FilesLenghtMap.set(file.id, lenght);
+      this.repo.DocsLenghtMap.set(doc.id, lenght);
 
       resolve(true);
     });
   }
 
-  private CalculateIdf(currWord: [string, number]): Promise<boolean> {
+  private CalculateWordIdf(currWord: [string, number]): Promise<boolean> {
     return new Promise(resolve => {
-      var wordFrequencyInAllFiles = 0;
+      var wordFrequencyInAllDocs = 0;
 
-      for (var file of this.repo.Files) {
-        var fileWords = this.repo.GetWordsInFile(file.id);
+      for (var doc of this.repo.Docs) {
+        var fileWords = this.repo.GetWordsInDoc(doc.id);
         for (var word of fileWords) {
           if (word[0] == currWord[0]) {
-            wordFrequencyInAllFiles++;
+            wordFrequencyInAllDocs++;
             break;
           }
         }
       }
 
-      var idf = Math.log(this.repo.Files.length / wordFrequencyInAllFiles) / Math.log(2);
+      var idf = Math.log(this.repo.Docs.length / wordFrequencyInAllDocs) / Math.log(2);
       this.repo.AllWords.set(currWord[0], idf);
 
       resolve(true);
     });
   }
 
-  private ReadFile(file: any): Promise<boolean> {
+  private ReadDoc(doc: any): Promise<boolean> {
     return new Promise(resolve => {
       gapi.client.drive.files.export({
-        fileId: file.id,
+        fileId: doc.id,
         mimeType: 'text/plain'
       }).then((response: any) => {
         return this.http.post<any>(environment.SERVER_URL, { Text: response.body }).toPromise();
@@ -104,14 +104,14 @@ export class СrawlerService {
           words.set(item.Word, item.Frequency);
         }
 
-        this.repo.AddFileWithWords(file, words);
+        this.repo.AddDocWithWords(doc, words);
 
         resolve(true);
       });
     });
   }
 
-  private GetFilesFirstPage(): Promise<boolean> {
+  private GetFirstPageWithDocs(): Promise<boolean> {
     return new Promise(resolve => {
       gapi.client.drive.files.list({
         q: "mimeType = 'application/vnd.google-apps.document' and 'me' in owners",
@@ -123,7 +123,7 @@ export class СrawlerService {
     });
   }
 
-  private GetFilesNextPage(token: any): Promise<boolean> {
+  private GetNextPageWithDocs(token: any): Promise<boolean> {
     return new Promise(async resolve => {
       gapi.client.drive.files.list({
         q: "mimeType = 'application/vnd.google-apps.document' and 'me' in owners",
@@ -138,13 +138,13 @@ export class СrawlerService {
 
   private HandleResponce(response: any): Promise<boolean> {
     return new Promise(async resolve => {
-      var files = response.result.files;
-      if (files && files.length > 0) {
-        for (var i = 0; i < files.length; i++) {
-          this.repo.AddFile(files[i]);
+      var docs = response.result.files;
+      if (docs && docs.length > 0) {
+        for (var i = 0; i < docs.length; i++) {
+          this.repo.AddDoc(docs[i]);
         }
         if (response.result.nextPageToken) {
-          resolve(this.GetFilesNextPage(response.result.nextPageToken));
+          resolve(this.GetNextPageWithDocs(response.result.nextPageToken));
         }
       }
       resolve(true)

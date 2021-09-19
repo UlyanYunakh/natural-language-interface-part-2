@@ -4,31 +4,31 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class RepositoryService {
-  private _filesList = new Array<any>();
+  private _DocsList = new Array<any>();
   private _allWordsMap = new Map<string, number>();
-  private _wordsInFileMap = new Map<string, Map<string, number>>();
-  private _filesLenghtMap = new Map<string, number>();
+  private _wordsInDocMap = new Map<string, Map<string, number>>();
+  private _docLenghtMap = new Map<string, number>();
 
-  public get FilesLenghtMap() {
-    return this._filesLenghtMap;
+  public get DocsLenghtMap() {
+    return this._docLenghtMap;
   }
 
   constructor() { }
 
-  public get Files() {
-    return this._filesList;
+  public get Docs() {
+    return this._DocsList;
   }
 
   public get AllWords() {
     return this._allWordsMap;
   }
 
-  public get WordsInFile() {
-    return this._wordsInFileMap;
+  public get WordsInDoc() {
+    return this._wordsInDocMap;
   }
 
-  public GetWordsInFile(fileId: string): Map<string, number> {
-    var words = this._wordsInFileMap.get(fileId);
+  public GetWordsInDoc(docId: string): Map<string, number> {
+    var words = this._wordsInDocMap.get(docId);
 
     if (words) {
       return words;
@@ -38,9 +38,9 @@ export class RepositoryService {
     }
   }
 
-  public AddFile(file: any): void {
-    if (!this._filesList.includes(file)) {
-      this._filesList.push(file);
+  public AddDoc(file: any): void {
+    if (!this._DocsList.includes(file)) {
+      this._DocsList.push(file);
     }
   }
 
@@ -50,7 +50,7 @@ export class RepositoryService {
     this._allWordsMap.set(word, currFrequency ? currFrequency + frequency : frequency);
   }
 
-  public AddFileWithWords(file: any, words: Map<string, number>): void {
-    this._wordsInFileMap.set(file.id, words);
+  public AddDocWithWords(file: any, words: Map<string, number>): void {
+    this._wordsInDocMap.set(file.id, words);
   }
 }
