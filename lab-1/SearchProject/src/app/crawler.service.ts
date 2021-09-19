@@ -8,7 +8,9 @@ declare var gapi: any;
   providedIn: 'root'
 })
 export class СrawlerService {
-  public FileReadIterator: AsyncGenerator<number, boolean, void> | undefined;
+  public FileReadIterator = this.ReadGeneratorFunction();
+  public WordsIdfIterator = this.IdfGeneratorFunction();
+  public FilesLenghtIterator = this.LenghtGeneratorFunction();
 
   constructor(
     private http: HttpClient,
@@ -25,16 +27,86 @@ export class СrawlerService {
     });
   }
 
-  private async *ReadGeneratorFunction(): AsyncGenerator<number, boolean, void> {
-    for (var i = 0; i < this.repo.FilesCount; i++) {
-      await this.ReadFile(this.repo.GetFile(i));
-      yield i;
+  private async *LenghtGeneratorFunction(): AsyncGenerator<number, boolean, void> {
+    var number = 0;
+
+    for (var file of this.repo.Files) {
+      await this.CalculateLenght(file);
+
+      yield number;
+
+      number++;
     }
 
     return true;
   }
 
-  public ReadFile(file: any): Promise<boolean> {
+  private CalculateLenght(file: any): Promise<boolean> {
+    return new Promise(resolve => {
+      var words = this.repo.GetWordsInFile(file.id);
+      var sum = 0;
+
+      for (var word of words) {
+        sum += Math.pow(this.repo.AllWords.get(word[0])!, 2);
+      }
+
+      var lenght = Math.sqrt(sum);
+      this.repo.FilesLenghtMap.set(file.id, lenght);
+
+      resolve(true);
+    });
+  }
+
+  private async *IdfGeneratorFunction(): AsyncGenerator<number, boolean, void> {
+    var number = 0;
+
+    for (var word of this.repo.AllWords) {
+      await this.CalculateIdf(word);
+
+      yield number;
+
+      number++;
+    }
+
+    return true;
+  }
+
+  private CalculateIdf(currWord: [string, number]): Promise<boolean> {
+    return new Promise(resolve => {
+      var wordFrequencyInAllFiles = 0;
+
+      for (var file of this.repo.Files) {
+        var fileWords = this.repo.GetWordsInFile(file.id);
+        for (var word of fileWords) {
+          if (word[0] == currWord[0]) {
+            wordFrequencyInAllFiles++;
+            break;
+          }
+        }
+      }
+
+      var idf = Math.log(this.repo.Files.length / wordFrequencyInAllFiles) / Math.log(2);
+      this.repo.AllWords.set(currWord[0], idf);
+
+      resolve(true);
+    });
+  }
+
+  private async *ReadGeneratorFunction(): AsyncGenerator<number, boolean, void> {
+    var number = 0;
+
+    for (var file of this.repo.Files) {
+      await this.ReadFile(file);
+
+      yield number;
+
+      number++;
+    }
+
+    return true;
+  }
+
+  private ReadFile(file: any): Promise<boolean> {
     return new Promise(resolve => {
       gapi.client.drive.files.export({
         fileId: file.id,
