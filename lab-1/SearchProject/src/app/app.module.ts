@@ -8,13 +8,15 @@ import { MainComponent } from './main/main.component';
 import { AuthComponent } from './auth/auth.component';
 import { CrawlerComponent } from './crawler/crawler.component';
 import { HttpClientModule } from '@angular/common/http';
+import { AppInfoComponent } from './app-info/app-info.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MainComponent,
     AuthComponent,
-    CrawlerComponent
+    CrawlerComponent,
+    AppInfoComponent
   ],
   imports: [
     BrowserModule,
