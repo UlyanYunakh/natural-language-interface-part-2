@@ -8,37 +8,48 @@ declare var gapi: any;
   providedIn: 'root'
 })
 export class СrawlerService {
-  public FileReadIterator = this.ReadGeneratorFunction();
-  public WordsIdfIterator = this.IdfGeneratorFunction();
-  public FilesLenghtIterator = this.LenghtGeneratorFunction();
-
   constructor(
     private http: HttpClient,
     private repo: RepositoryService
   ) { }
 
-  public GetFiles(): Promise<boolean> {
-    return new Promise(async resolve => {
-      await this.GetFilesFirstPage();
-
-      this.FileReadIterator = this.ReadGeneratorFunction();
-
-      resolve(true);
-    });
+  public GetCrawlerIterator(): AsyncGenerator<[string, number], boolean, void> {
+    return this.Start();
   }
 
-  private async *LenghtGeneratorFunction(): AsyncGenerator<number, boolean, void> {
-    var number = 0;
+  private async *Start(): AsyncGenerator<[string, number], boolean, void> {
+    var loadingPoints = 0;
 
+    yield ["Getting docs from Google Drive...", loadingPoints];
+    await this.GetDocs();
+    var docsCount = this.repo.Files.length;
+
+
+    yield [`Preparing docs (0/${docsCount})`, loadingPoints];
+    var number = 1;
+    var point = 100 / docsCount;
     for (var file of this.repo.Files) {
-      await this.CalculateLenght(file);
-
-      yield number;
-
+      await this.ReadFile(file);
+      yield [`Preparing docs (${number}/${docsCount})`, loadingPoints += point];
       number++;
     }
 
+    for (var word of this.repo.AllWords) {
+      await this.CalculateIdf(word);
+    }
+
+    for (var file of this.repo.Files) {
+      await this.CalculateLenght(file);
+    }
+
     return true;
+  }
+
+  private GetDocs(): Promise<boolean> {
+    return new Promise(async resolve => {
+      await this.GetFilesFirstPage();
+      resolve(true);
+    });
   }
 
   private CalculateLenght(file: any): Promise<boolean> {
@@ -55,20 +66,6 @@ export class СrawlerService {
 
       resolve(true);
     });
-  }
-
-  private async *IdfGeneratorFunction(): AsyncGenerator<number, boolean, void> {
-    var number = 0;
-
-    for (var word of this.repo.AllWords) {
-      await this.CalculateIdf(word);
-
-      yield number;
-
-      number++;
-    }
-
-    return true;
   }
 
   private CalculateIdf(currWord: [string, number]): Promise<boolean> {
@@ -90,20 +87,6 @@ export class СrawlerService {
 
       resolve(true);
     });
-  }
-
-  private async *ReadGeneratorFunction(): AsyncGenerator<number, boolean, void> {
-    var number = 0;
-
-    for (var file of this.repo.Files) {
-      await this.ReadFile(file);
-
-      yield number;
-
-      number++;
-    }
-
-    return true;
   }
 
   private ReadFile(file: any): Promise<boolean> {

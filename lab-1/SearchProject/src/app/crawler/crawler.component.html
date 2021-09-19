@@ -1,1 +1,10 @@
-<p>loading works!</p>
+<div class="d-flex flex-column align-items-center">
+    <p>{{message}}</p>
+</div>
+<div class="progress">
+    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+    [style.width]="loading + '%'"></div>
+</div>
+<div class="d-flex flex-column align-items-center">
+    <p>Please, wait</p>
+</div>

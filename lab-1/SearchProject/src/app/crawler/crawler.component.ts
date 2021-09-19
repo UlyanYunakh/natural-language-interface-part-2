@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { СrawlerService } from '../crawler.service';
 
 @Component({
@@ -6,16 +7,25 @@ import { СrawlerService } from '../crawler.service';
   templateUrl: './crawler.component.html'
 })
 export class CrawlerComponent implements OnInit {
+  public message = "";
+  public loading = 0;
 
-  constructor(private harvester: СrawlerService) { }
+  constructor(
+    private crawler: СrawlerService,
+    private router: Router
+  ) { }
 
-  ngOnInit(): void {
-    this.harvester.GetFiles().then(async() => {
-      var currFileNumber = await this.harvester.FileReadIterator?.next();
-      while (!currFileNumber?.done) {
-        console.log(currFileNumber?.value);
-        currFileNumber = await this.harvester.FileReadIterator?.next();
-      }
-    });
+  async ngOnInit(): Promise<void> {
+    var iter = this.crawler.GetCrawlerIterator();
+
+    var currMessage = await iter.next();
+    while (!currMessage.done) {
+      this.message = currMessage.value[0];
+      this.loading = currMessage.value[1];
+
+      currMessage = await iter.next();
+    }
+
+    this.router.navigate(["main"]);
   }
 }
