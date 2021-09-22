@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 export class RepositoryService {
   private _DocsList = new Array<any>();
   private _allWordsMap = new Map<string, number>();
+  private _allIdfMap = new Map<string, number>();
   private _wordsInDocMap = new Map<string, Map<string, number>>();
   private _docLenghtMap = new Map<string, number>();
 
@@ -21,6 +22,10 @@ export class RepositoryService {
 
   public get AllWords() {
     return this._allWordsMap;
+  }
+
+  public get AllIdf() {
+    return this._allIdfMap;
   }
 
   public get WordsInDoc() {

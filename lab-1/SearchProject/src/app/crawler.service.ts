@@ -83,7 +83,7 @@ export class СrawlerService {
       }
 
       var idf = Math.log(this.repo.Docs.length / wordFrequencyInAllDocs) / Math.log(2);
-      this.repo.AllWords.set(currWord[0], idf);
+      this.repo.AllIdf.set(currWord[0], idf);
 
       resolve(true);
     });
