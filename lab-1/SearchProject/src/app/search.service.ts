@@ -23,7 +23,7 @@ export class SearchService {
       let docLenght = this.repo.DocsLenghtMap.get(doc.id);
 
       if (docWords && docLenght) {
-        docs.push([doc, this.CosineSimilarity(words, lenght, docWords, docLenght)]);
+        docs.push([doc, SearchService.CosineSimilarity(words, lenght, docWords, docLenght)]);
       }
     }
 
