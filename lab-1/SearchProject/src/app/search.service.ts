@@ -27,6 +27,8 @@ export class SearchService {
       }
     }
 
+    docs.sort((a,b) => b[1] - a[1]);
+
     console.log(docs);
   }
 
