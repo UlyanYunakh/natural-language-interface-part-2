@@ -1,5 +1,7 @@
-import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment';
+import {Injectable} from '@angular/core';
+import {environment} from 'src/environments/environment';
+import {DocInfo} from "./doc-info";
+
 declare var gapi: any;
 
 @Injectable({
@@ -7,7 +9,23 @@ declare var gapi: any;
 })
 export class GoogleApiService {
   constructor() {
-    gapi.load("client:auth2", this.InitClient());
+    this.InitClient();
+  }
+
+  GetDocInfoById(docId: string): Promise<DocInfo> {
+    return new Promise<DocInfo>(resolve => {
+      gapi.client.drive.files.get({
+        fileId: docId,
+        fields: 'name,webViewLink,modifiedTime,iconLink'
+      }).then((response: any) => {
+        resolve({
+          webViewLink: response.result.webViewLink,
+          name: response.result.name,
+          iconLink: response.result.iconLink,
+          modifiedTime: response.result.modifiedTime
+        });
+      });
+    });
   }
 
   private InitClient() {
