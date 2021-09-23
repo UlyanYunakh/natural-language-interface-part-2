@@ -1,7 +1,9 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {RepositoryService} from "./repository.service";
 import {environment} from "../environments/environment";
 import {HttpClient} from "@angular/common/http";
+import {GoogleApiService} from "./google-api.service";
+import {DocInfo} from "./doc-info";
 
 @Injectable({
   providedIn: 'root'
@@ -10,26 +12,39 @@ export class SearchService {
 
   constructor(
     private http: HttpClient,
-    private repo: RepositoryService
-  ) { }
+    private repo: RepositoryService,
+    private gapi: GoogleApiService
+  ) {
+  }
 
-  public async FindDocs(query: string): Promise<void> {
+  async FindDocs(query: string): Promise<Array<DocInfo>> {
     let words = await this.GetWordsFromQuery(query);
-    let lenght = this.CalculateLenght(words);
-    let docs = [];
+    let length = this.CalculateLength(words);
+    let cosSimArray = new Array<[string, number]>();
 
-    for(let doc of this.repo.Docs) {
+    for (let doc of this.repo.Docs) {
       let docWords = this.repo.WordsInDoc.get(doc.id);
-      let docLenght = this.repo.DocsLenghtMap.get(doc.id);
+      let docLength = this.repo.DocsLenghtMap.get(doc.id);
 
-      if (docWords && docLenght) {
-        docs.push([doc, SearchService.CosineSimilarity(words, lenght, docWords, docLenght)]);
+      if (docWords && docLength) {
+        let cosSim = SearchService.CosineSimilarity(words, length, docWords, docLength);
+        if (cosSim != 0) {
+          cosSimArray.push([doc.id, cosSim]);
+        }
       }
     }
+    cosSimArray.sort((a, b) => b[1] - a[1]);
 
-    docs.sort((a,b) => b[1] - a[1]);
+    let docs = new Array<DocInfo>();
 
-    console.log(docs);
+    for (let item of cosSimArray) {
+      let docInfo = await this.gapi.GetDocInfoById(item[0]);
+      docs.push(docInfo);
+    }
+
+    return new Promise(resolve => {
+      resolve(docs);
+    });
   }
 
   private static CosineSimilarity(
@@ -40,7 +55,7 @@ export class SearchService {
   ): number {
     let sum = 0;
 
-    for(let word of words) {
+    for (let word of words) {
       let wordInDoc = docWords.get(word[0]);
       if (wordInDoc) {
         sum += word[1] * wordInDoc;
@@ -52,7 +67,7 @@ export class SearchService {
 
   private GetWordsFromQuery(query: string): Promise<Map<string, number>> {
     return new Promise<Map<string, number>>(resolve => {
-      this.http.post<any>(environment.SERVER_URL, { Text: query }).toPromise()
+      this.http.post<any>(environment.SERVER_URL, {Text: query}).toPromise()
         .then((response: any) => {
           var words = new Map<string, number>();
 
@@ -65,13 +80,13 @@ export class SearchService {
     });
   }
 
-  private CalculateLenght(words: Map<string, number>): number {
+  private CalculateLength(words: Map<string, number>): number {
     let sum = 0;
 
     for (let word of words) {
       let wordInAllWords = this.repo.AllWords.get(word[0]);
       let wordIdf = this.repo.AllIdf.get(word[0]);
-      if(wordInAllWords && wordIdf) {
+      if (wordInAllWords && wordIdf) {
         wordIdf = wordIdf * (word[1] / wordInAllWords);
         sum += Math.pow(wordIdf, 2);
       }
