@@ -1,0 +1,9 @@
+<a *ngIf="DocInfo" class="doc my-2 p-2" href="{{DocInfo.webViewLink}}" target="_blank" rel="noopener noreferrer">
+    <p class="mx-1">
+        Document: <img src="{{DocInfo.iconLink}}" alt="doc-icon"> {{(DocInfo.name.length>25)? (DocInfo.name |
+        slice:0:25)+'...':(DocInfo.name)}}
+    </p>
+    <p>
+        Last modified: {{DocInfo.modifiedTime | date:'fullDate'}}
+    </p>
+</a>

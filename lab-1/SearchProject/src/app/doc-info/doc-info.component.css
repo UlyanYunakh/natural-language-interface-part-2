@@ -1,0 +1,20 @@
+.doc {
+    display: block;
+    border-radius: 10px;
+    box-shadow: 0px 0px 5px black;
+    text-decoration: none;
+    transition: transform .3s;
+}
+
+.doc-icon {
+    width: 70px;
+}
+
+.info-text {
+    width: 100%;
+}
+
+.doc:hover {
+    text-decoration: none;
+    transform: scale(1.05);
+}
