@@ -3,4 +3,5 @@ export interface DocInfo {
   name: string;
   iconLink: string;
   modifiedTime: Date;
+  cosSim: number;
 }

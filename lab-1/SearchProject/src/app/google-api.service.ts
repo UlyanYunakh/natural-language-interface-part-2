@@ -22,7 +22,8 @@ export class GoogleApiService {
           webViewLink: response.result.webViewLink,
           name: response.result.name,
           iconLink: response.result.iconLink,
-          modifiedTime: response.result.modifiedTime
+          modifiedTime: response.result.modifiedTime,
+          cosSim: 0
         });
       });
     });

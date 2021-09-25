@@ -39,6 +39,7 @@ export class SearchService {
 
     for (let item of cosSimArray) {
       let docInfo = await this.gapi.GetDocInfoById(item[0]);
+      docInfo.cosSim = item[1];
       docs.push(docInfo);
     }
 
