@@ -20,6 +20,13 @@ export class SearchService {
   async FindDocs(query: string): Promise<Array<DocInfo>> {
     let words = await this.GetWordsFromQuery(query);
     let length = this.CalculateLength(words);
+
+    if(length == 0) {
+      return new Promise(resolve => {
+        resolve(new Array<DocInfo>());
+      });
+    }
+
     let cosSimArray = new Array<[string, number]>();
 
     for (let doc of this.repo.Docs) {
