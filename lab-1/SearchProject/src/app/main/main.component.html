@@ -1,7 +1,22 @@
-<div class="d-flex flex-column align-items-center">
-  <div class="mb-2">
-    <app-app-info></app-app-info>
+<div class="mb-2">
+  <app-app-info></app-app-info>
+</div>
+<form (ngSubmit)="FindDocs()">
+  <label for="query" class="form-label">Search query:</label>
+  <input id="query" class="form-control mb-2" placeholder="Type here..." [formControl]="queryControl">
+  <div *ngIf="!isSearching">
+    <button type="submit" class="btn btn-primary" title="Press here">Search</button>
   </div>
-  <input class="form-control mb-2" placeholder="Type here...">
-  <button class="btn btn-primary" title="Press here">Find!</button>
+  <div *ngIf="isSearching">
+    <button class="btn btn-primary" type="button" disabled>
+      <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+      Searching...
+    </button>
+  </div>
+</form>
+<p *ngIf="!isSearching" class="text-secondary">
+  {{docs.length}} resulst ({{time | number}} seconds).
+</p>
+<div *ngFor="let doc of docs">
+  <app-doc-info [DocInfo]="doc"></app-doc-info>
 </div>
