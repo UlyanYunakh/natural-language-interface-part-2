@@ -3,8 +3,7 @@ import { DocInfo } from '../doc-info';
 
 @Component({
   selector: 'app-doc-info',
-  templateUrl: './doc-info.component.html',
-  styleUrls: ['./doc-info.component.css']
+  templateUrl: './doc-info.component.html'
 })
 export class DocInfoComponent {
   @Input() DocInfo: DocInfo | undefined;
