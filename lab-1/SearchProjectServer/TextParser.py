@@ -10,7 +10,7 @@ def wordize(sentences):
     for sent in nltk.sent_tokenize(sentences.lower()):
         for word in nltk.word_tokenize(sent):
             if word != '.' and word != ',' and word != '?' and word != '!' and word != '-':
-                listWord.append(word)
+                listWord.append(word.replace(u'\ufeff', u''))
     return listWord
 
 
