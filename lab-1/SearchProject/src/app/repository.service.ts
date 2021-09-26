@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { DocInfo } from './doc-info';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,7 @@ export class RepositoryService {
   private _idfs = new Map<string, number>();
   private _docWords = new Map<string, Map<string, number>>();
   private _docLenghts = new Map<string, number>();
+  private _docInfo = new Map<string, DocInfo>();
 
   constructor() { }
 
@@ -16,6 +18,15 @@ export class RepositoryService {
     this._docWords = new Map<string, Map<string, number>>();
     this._idfs = new Map<string, number>();
     this._docLenghts = new Map<string, number>();
+    this._docInfo = new Map<string, DocInfo>();
+  }
+
+  AddDocInfo(docId:string, docInfo: DocInfo): void {
+    this._docInfo.set(docId, docInfo);
+  }
+
+  GetDocInfoById(docId: string): DocInfo | undefined {
+    return this._docInfo.get(docId);
   }
 
   GetDocsCount(): number {
