@@ -1,11 +1,17 @@
 <div class="mb-2">
   <app-app-info></app-app-info>
 </div>
+<div class="mb-2 pb-2 border-bottom">
+  <p>
+    If during the operation of the app you have changed or added new documents to your <b>Cloud Storage</b>, you need to update app data. Press button below
+  </p>
+  <button class="btn btn-primary" title="Update data" (click)="UpdateData()">Update data</button>
+</div>
 <form (ngSubmit)="FindDocs()">
   <label for="query" class="form-label">Search query:</label>
   <input id="query" class="form-control mb-2" placeholder="Type here..." [formControl]="queryControl">
   <div *ngIf="!isSearching">
-    <button type="submit" class="btn btn-primary" title="Press here">Search</button>
+    <button type="submit" class="btn btn-primary" title="Search">Search</button>
   </div>
   <div *ngIf="isSearching">
     <button class="btn btn-primary" type="button" disabled>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { DocInfo } from '../doc-info';
 import { SearchService } from '../search.service';
 
@@ -16,8 +17,13 @@ export class MainComponent {
   private interval: any;
 
   constructor(
-    private search: SearchService
+    private search: SearchService,
+    private router: Router
   ) { }
+
+  UpdateData(): void {
+    this.router.navigate(["crawler"]);
+  }
 
   async FindDocs(): Promise<void> {
     this.isSearching = true;
