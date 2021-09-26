@@ -2,101 +2,123 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { environment } from 'src/environments/environment';
 import { RepositoryService } from './repository.service';
-declare var gapi: any;
+import { GoogleApiService } from './google-api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class СrawlerService {
+
   constructor(
     private http: HttpClient,
-    private repo: RepositoryService
+    private repo: RepositoryService,
+    private gapi: GoogleApiService
   ) { }
 
-  public GetCrawlerIterator(): AsyncGenerator<[string, number], boolean, void> {
+  GetCrawlerIterator(): AsyncGenerator<[string, number], void, void> {
     return this.Start();
   }
 
-  private async *Start(): AsyncGenerator<[string, number], boolean, void> {
+  private async *Start(): AsyncGenerator<[string, number], void, void> {
     var loadingPoints = 0;
+    this.repo.ResetRepository();
 
     yield ["Getting docs from Google Drive...", loadingPoints];
-    await this.GetDocs();
-    var docsCount = this.repo.Docs.length;
-
+    await this.GetDocsId();
+    var docsCount = this.repo.GetDocsCount();
 
     yield [`Preparing docs (0/${docsCount})`, loadingPoints];
     var number = 1;
     var point = 100 / docsCount;
-    for (var doc of this.repo.Docs) {
-      await this.ReadDoc(doc);
+
+    let iter = this.repo.GetDocsWordsIter();
+    let iterResult = iter.next();
+    while (!iterResult.done) {
+      let doc = iterResult.value;
+      await this.ReadDoc(doc[0]);
       yield [`Preparing docs (${number}/${docsCount})`, loadingPoints += point];
       number++;
+      iterResult = iter.next();
     }
 
-    for (var word of this.repo.AllWords) {
-      await this.CalculateWordIdf(word);
-    }
-
-    for (var doc of this.repo.Docs) {
-      await this.CalculateDocLenght(doc);
-    }
-
-    return true;
+    yield ['Finishing', 100]
+    await this.CalculateAllIdfs();
+    await this.CalculateAllLenghts();
   }
 
-  private GetDocs(): Promise<boolean> {
-    return new Promise(async resolve => {
-      await this.GetFirstPageWithDocs();
-      resolve(true);
-    });
+  private async GetDocsId(): Promise<void> {
+    let ids = await this.gapi.GetDocsId();
+    for (let id of ids) {
+      this.repo.AddDocWithWords(id, new Map<string, number>());
+    }
   }
 
-  private CalculateDocLenght(doc: any): Promise<boolean> {
+  private CalculateAllIdfs(): Promise<void> {
+    let iter = this.repo.GetWordsIter();
+    let iterResult = iter.next();
+    while (!iterResult.done) {
+      let word = iterResult.value;
+      this.CalculateWordIdf(word);
+      iterResult = iter.next();
+    }
+
     return new Promise(resolve => {
-      var words = this.repo.GetWordsInDoc(doc.id);
-      var sum = 0;
-
-      for (var word of words) {
-        sum += Math.pow(this.repo.AllWords.get(word[0])!, 2);
-      }
-
-      var lenght = Math.sqrt(sum);
-      this.repo.DocsLenghtMap.set(doc.id, lenght);
-
-      resolve(true);
-    });
+      resolve();
+    })
   }
 
-  private CalculateWordIdf(currWord: [string, number]): Promise<boolean> {
-    return new Promise(resolve => {
-      var wordFrequencyInAllDocs = 0;
+  private CalculateWordIdf(word: [string, number]): void {
+    var wordFrequencyInAllDocs = 0;
 
-      for (var doc of this.repo.Docs) {
-        var fileWords = this.repo.GetWordsInDoc(doc.id);
-        for (var word of fileWords) {
-          if (word[0] == currWord[0]) {
-            wordFrequencyInAllDocs++;
-            break;
-          }
+    let iter = this.repo.GetDocsWordsIter();
+    let iterResult = iter.next();
+    while (!iterResult.done) {
+      let doc = iterResult.value;
+      for (var docWord of doc[1]) {
+        if (docWord[0] == word[0]) {
+          wordFrequencyInAllDocs++;
+          break;
         }
       }
+      iterResult = iter.next();
+    }
 
-      var idf = Math.log(this.repo.Docs.length / wordFrequencyInAllDocs) / Math.log(2);
-      this.repo.AllIdf.set(currWord[0], idf);
-
-      resolve(true);
-    });
+    let docsCount = this.repo.GetDocsCount();
+    var idf = Math.log(docsCount / wordFrequencyInAllDocs) / Math.log(2);
+    this.repo.SetIdf(word[0], idf);
   }
 
-  private ReadDoc(doc: any): Promise<boolean> {
+  private CalculateAllLenghts(): Promise<void> {
+    let iter = this.repo.GetDocsWordsIter();
+    let iterResult = iter.next();
+    while (!iterResult.done) {
+      let doc = iterResult.value;
+      this.CalculateDocLenght(doc);
+      iterResult = iter.next();
+    }
+
     return new Promise(resolve => {
-      gapi.client.drive.files.export({
-        fileId: doc.id,
-        mimeType: 'text/plain'
-      }).then((response: any) => {
-        return this.http.post<any>(environment.SERVER_URL, { Text: response.body }).toPromise();
-      }).then((response: any) => {
+      resolve();
+    })
+  }
+
+  private CalculateDocLenght(doc: [string, Map<string, number>]): void {
+    var sum = 0;
+    for (var docWord of doc[1]) {
+      let frequency = this.repo.GetWordFrequency(docWord[0]);
+      if (frequency) {
+        sum += Math.pow(frequency, 2);
+      }
+    }
+    var lenght = Math.sqrt(sum);
+    this.repo.SetDocLenght(doc[0], lenght);
+  }
+
+  private ReadDoc(docId: string): Promise<boolean> {
+    return new Promise(async resolve => {
+      let content = await this.gapi.GetDocContentById(docId);
+
+      this.http.post<any>(environment.SERVER_URL, { Text: content }).toPromise().then((response: any) => {
         var words = new Map<string, number>();
 
         for (var item of response) {
@@ -104,50 +126,10 @@ export class СrawlerService {
           words.set(item.Word, item.Frequency);
         }
 
-        this.repo.AddDocWithWords(doc, words);
+        this.repo.AddDocWithWords(docId, words);
 
         resolve(true);
       });
-    });
-  }
-
-  private GetFirstPageWithDocs(): Promise<boolean> {
-    return new Promise(resolve => {
-      gapi.client.drive.files.list({
-        q: "mimeType = 'application/vnd.google-apps.document' and 'me' in owners",
-        pageSize: "100",
-        fields: "nextPageToken, files(id, name)"
-      }).then(async (response: any) => {
-        resolve(this.HandleResponce(response));
-      });
-    });
-  }
-
-  private GetNextPageWithDocs(token: any): Promise<boolean> {
-    return new Promise(async resolve => {
-      gapi.client.drive.files.list({
-        q: "mimeType = 'application/vnd.google-apps.document' and 'me' in owners",
-        pageSize: "100",
-        fields: "nextPageToken, files(id, name)",
-        pageToken: token
-      }).then((response: any) => {
-        resolve(this.HandleResponce(response));
-      });
-    });
-  }
-
-  private HandleResponce(response: any): Promise<boolean> {
-    return new Promise(async resolve => {
-      var docs = response.result.files;
-      if (docs && docs.length > 0) {
-        for (var i = 0; i < docs.length; i++) {
-          this.repo.AddDoc(docs[i]);
-        }
-        if (response.result.nextPageToken) {
-          resolve(this.GetNextPageWithDocs(response.result.nextPageToken));
-        }
-      }
-      resolve(true)
     });
   }
 }

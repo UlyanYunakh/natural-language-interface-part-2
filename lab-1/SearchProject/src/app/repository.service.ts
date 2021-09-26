@@ -4,58 +4,89 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class RepositoryService {
-  private _DocsList = new Array<any>();
-  private _allWordsMap = new Map<string, number>();
-  private _allIdfMap = new Map<string, number>();
-  private _wordsInDocMap = new Map<string, Map<string, number>>();
-  private _docLenghtMap = new Map<string, number>();
-
-  public get DocsLenghtMap() {
-    return this._docLenghtMap;
-  }
+  private _words = new Map<string, number>();
+  private _idfs = new Map<string, number>();
+  private _docWords = new Map<string, Map<string, number>>();
+  private _docLenghts = new Map<string, number>();
 
   constructor() { }
 
-  public get Docs() {
-    return this._DocsList;
+  ResetRepository(): void {
+    this._words = new Map<string, number>();
+    this._docWords = new Map<string, Map<string, number>>();
+    this._idfs = new Map<string, number>();
+    this._docLenghts = new Map<string, number>();
   }
 
-  public get AllWords() {
-    return this._allWordsMap;
+  GetDocsCount(): number {
+    return this._docWords.size;
   }
 
-  public get AllIdf() {
-    return this._allIdfMap;
+  GetDocsWordsIter(): Generator<[string, Map<string, number>], boolean, void> {
+    return this.DocsWordsGenerator();
   }
 
-  public get WordsInDoc() {
-    return this._wordsInDocMap;
-  }
-
-  public GetWordsInDoc(docId: string): Map<string, number> {
-    var words = this._wordsInDocMap.get(docId);
-
-    if (words) {
-      return words;
+  private *DocsWordsGenerator(): Generator<[string, Map<string, number>], boolean, void> {
+    for (let doc of this._docWords) {
+      yield doc;
     }
-    else {
-      return new Map<string, number>();
+    return true;
+  }
+
+  GetWordFrequency(word: string): number | undefined {
+    return this._words.get(word);
+  }
+
+  AddWord(word: string, frequency: number): void {
+    var currFrequency = this._words.get(word);
+
+    this._words.set(word, currFrequency ? currFrequency + frequency : frequency);
+  }
+
+  GetWordsIter(): Generator<[string, number], boolean, void> {
+    return this.WordsGenerator();
+  }
+
+  private *WordsGenerator(): Generator<[string, number], boolean, void> {
+    for (let word of this._words) {
+      yield word;
     }
+    return true;
   }
 
-  public AddDoc(file: any): void {
-    if (!this._DocsList.includes(file)) {
-      this._DocsList.push(file);
+
+  GetIdf(word: string): number | undefined {
+    return this._idfs.get(word);
+  }
+
+  SetIdf(word: string, idf: number): void {
+    this._idfs.set(word, idf);
+  }
+
+  GetIdfsIter(): Generator<[string, number], boolean, void> {
+    return this.IdfsGenerator();
+  }
+
+  private *IdfsGenerator(): Generator<[string, number], boolean, void> {
+    for (let idf of this._idfs) {
+      yield idf;
     }
+    return true;
   }
 
-  public AddWord(word: string, frequency: number): void {
-    var currFrequency = this._allWordsMap.get(word);
-
-    this._allWordsMap.set(word, currFrequency ? currFrequency + frequency : frequency);
+  SetDocLenght(docId: string, lenght: number): void {
+    this._docLenghts.set(docId, lenght);
   }
 
-  public AddDocWithWords(file: any, words: Map<string, number>): void {
-    this._wordsInDocMap.set(file.id, words);
+  GetDocLenght(docId: string): number | undefined {
+    return this._docLenghts.get(docId);
+  }
+
+  GetDocWords(docId: string): Map<string, number> | undefined {
+    return this._docWords.get(docId);
+  }
+
+  AddDocWithWords(docId: string, words: Map<string, number>): void {
+    this._docWords.set(docId, words);
   }
 }
