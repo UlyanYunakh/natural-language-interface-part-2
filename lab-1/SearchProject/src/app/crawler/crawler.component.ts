@@ -25,7 +25,9 @@ export class CrawlerComponent implements OnInit {
 
       currMessage = await iter.next();
     }
-
-    this.router.navigate(["main"]);
+    
+    setTimeout(() => {
+      this.router.navigate(["main"]);
+    }, 1000);
   }
 }
