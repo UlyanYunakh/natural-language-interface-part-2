@@ -1,6 +1,6 @@
-import {Injectable} from '@angular/core';
-import {environment} from 'src/environments/environment';
-import {DocInfo} from "./doc-info";
+import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment';
+import { DocInfo } from "./doc-info";
 
 declare var gapi: any;
 
@@ -8,6 +8,7 @@ declare var gapi: any;
   providedIn: 'root'
 })
 export class GoogleApiService {
+
   constructor() {
     this.InitClient();
   }
@@ -26,6 +27,64 @@ export class GoogleApiService {
           cosSim: 0
         });
       });
+    });
+  }
+
+  GetDocsId(): Promise<Array<string>> {
+    return new Promise(async resolve => {
+      let ids = new Array<string>();
+      resolve(await this.GetFirstPageWithDocs(ids));
+    });
+  }
+
+  GetDocContentById(docId: string): Promise<string> {
+    return new Promise(resolve => {
+      gapi.client.drive.files.export({
+        fileId: docId,
+        mimeType: 'text/plain'
+      }).then((response: any) => {
+        resolve(response.body);
+      });
+    });
+  }
+
+  private GetFirstPageWithDocs(ids: Array<string>): Promise<Array<string>> {
+    return new Promise(resolve => {
+      gapi.client.drive.files.list({
+        q: "mimeType = 'application/vnd.google-apps.document' and 'me' in owners",
+        pageSize: "100",
+        fields: "nextPageToken, files(id)"
+      }).then(async (response: any) => {
+        resolve(this.HandleResponce(response, ids));
+      });
+    });
+  }
+
+  private GetNextPageWithDocs(token: any, ids: Array<string>): Promise<Array<string>> {
+    return new Promise(async resolve => {
+      gapi.client.drive.files.list({
+        q: "mimeType = 'application/vnd.google-apps.document' and 'me' in owners",
+        pageSize: "100",
+        fields: "nextPageToken, files(id)",
+        pageToken: token
+      }).then((response: any) => {
+        resolve(this.HandleResponce(response, ids));
+      });
+    });
+  }
+
+  private HandleResponce(response: any, ids: Array<string>): Promise<Array<string>> {
+    return new Promise(async resolve => {
+      var docs = response.result.files;
+      if (docs && docs.length > 0) {
+        for (var i = 0; i < docs.length; i++) {
+          ids.push(docs[i].id);
+        }
+        if (response.result.nextPageToken) {
+          resolve(this.GetNextPageWithDocs(response.result.nextPageToken, ids));
+        }
+      }
+      resolve(ids)
     });
   }
 
