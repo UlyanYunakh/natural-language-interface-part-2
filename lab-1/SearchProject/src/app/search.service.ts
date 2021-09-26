@@ -50,9 +50,11 @@ export class SearchService {
     let docs = new Array<DocInfo>();
 
     for (let item of cosSimArray) {
-      let docInfo = await this.gapi.GetDocInfoById(item[0]);
-      docInfo.cosSim = item[1];
-      docs.push(docInfo);
+      let docInfo = await this.repo.GetDocInfoById(item[0]);
+      if (docInfo) {
+        docInfo.cosSim = item[1];
+        docs.push(docInfo);
+      }
     }
 
     return new Promise(resolve => {
