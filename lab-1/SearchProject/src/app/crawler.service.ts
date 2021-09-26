@@ -36,6 +36,7 @@ export class СrawlerService {
     while (!iterResult.done) {
       let doc = iterResult.value;
       await this.ReadDoc(doc[0]);
+      await this.GetDocsInfo(doc[0]);
       yield [`Preparing docs (${number}/${docsCount})`, loadingPoints += point];
       number++;
       iterResult = iter.next();
@@ -44,7 +45,6 @@ export class СrawlerService {
     yield ['Finishing', 100]
     await this.CalculateAllIdfs();
     await this.CalculateAllLenghts();
-    await this.GetDocsInfo();
   }
 
   private async GetDocsId(): Promise<void> {
@@ -134,16 +134,10 @@ export class СrawlerService {
     });
   }
 
-  private GetDocsInfo(): Promise<void> {
+  private GetDocsInfo(docId: string): Promise<void> {
     return new Promise(async resolve => {
-      let iter = this.repo.GetDocsWordsIter();
-      let iterResult = iter.next();
-      while (!iterResult.done) {
-        let doc = iterResult.value;
-        let docInfo = await this.gapi.GetDocInfoById(doc[0]);
-        this.repo.AddDocInfo(doc[0], docInfo);
-        iterResult = iter.next();
-      }
+      let docInfo = await this.gapi.GetDocInfoById(docId);
+      this.repo.AddDocInfo(docId, docInfo);
       resolve();
     });
   }
