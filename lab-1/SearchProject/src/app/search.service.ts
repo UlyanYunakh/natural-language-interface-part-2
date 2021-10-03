@@ -53,6 +53,7 @@ export class SearchService {
       let docInfo = await this.repo.GetDocInfoById(item[0]);
       if (docInfo) {
         docInfo.cosSim = item[1];
+        this.GetSnippet(docInfo, words, this.repo.GetDocWords(item[0])!);
         docs.push(docInfo);
       }
     }
@@ -60,6 +61,29 @@ export class SearchService {
     return new Promise(resolve => {
       resolve(docs);
     });
+  }
+
+  private GetSnippet(doc: DocInfo, keyWords: Map<string, number>, docWords: Map<string, number>): void {
+    let keyWord: string = '';
+    for (let word of keyWords) {
+      if (docWords.get(word[0])) {
+        keyWord = word[0];
+      }
+    }
+
+    let content = doc.content;
+    content = content.toLowerCase();
+    let keyWordIndex = content.indexOf(keyWord);
+    let startIndex = keyWordIndex - 100;
+    let endIndex = keyWordIndex + 100;
+
+    if (startIndex < 0) {
+      startIndex = 0;
+    }
+
+    doc.snippetFirstPart = doc.content.substring(startIndex, keyWordIndex);
+    doc.snippetKeyWord = keyWord;
+    doc.snippetSecondPart = doc.content.substring(keyWordIndex + keyWord.length, endIndex);
   }
 
   private static CosineSimilarity(

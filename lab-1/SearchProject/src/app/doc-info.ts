@@ -4,4 +4,8 @@ export interface DocInfo {
   iconLink: string;
   modifiedTime: Date;
   cosSim: number;
+  snippetFirstPart: string;
+  snippetSecondPart: string;
+  snippetKeyWord: string;
+  content: string;
 }

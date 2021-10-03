@@ -36,7 +36,6 @@ export class СrawlerService {
     while (!iterResult.done) {
       let doc = iterResult.value;
       await this.ReadDoc(doc[0]);
-      await this.GetDocsInfo(doc[0]);
       yield [`Preparing docs (${number}/${docsCount})`, loadingPoints += point];
       number++;
       iterResult = iter.next();
@@ -119,7 +118,7 @@ export class СrawlerService {
     return new Promise(async resolve => {
       let content = await this.gapi.GetDocContentById(docId);
 
-      this.http.post<any>(environment.SERVER_URL, { Text: content }).toPromise().then((response: any) => {
+      this.http.post<any>(environment.SERVER_URL, { Text: content }).toPromise().then(async(response: any) => {
         var words = new Map<string, number>();
 
         for (var item of response) {
@@ -129,14 +128,15 @@ export class СrawlerService {
 
         this.repo.AddDocWithWords(docId, words);
 
+        await this.GetDocsInfo(docId, content);
         resolve(true);
       });
     });
   }
 
-  private GetDocsInfo(docId: string): Promise<void> {
+  private GetDocsInfo(docId: string, docContent: string): Promise<void> {
     return new Promise(async resolve => {
-      let docInfo = await this.gapi.GetDocInfoById(docId);
+      let docInfo = await this.gapi.GetDocInfoById(docId, docContent);
       this.repo.AddDocInfo(docId, docInfo);
       resolve();
     });

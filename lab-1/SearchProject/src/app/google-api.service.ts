@@ -13,7 +13,7 @@ export class GoogleApiService {
     this.InitClient();
   }
 
-  GetDocInfoById(docId: string): Promise<DocInfo> {
+  GetDocInfoById(docId: string, docContent: string): Promise<DocInfo> {
     return new Promise<DocInfo>(resolve => {
       gapi.client.drive.files.get({
         fileId: docId,
@@ -24,7 +24,11 @@ export class GoogleApiService {
           name: response.result.name,
           iconLink: response.result.iconLink,
           modifiedTime: response.result.modifiedTime,
-          cosSim: 0
+          cosSim: 0,
+          snippetFirstPart: '',
+          snippetKeyWord: '',
+          snippetSecondPart: '',
+          content: docContent
         });
       });
     });
