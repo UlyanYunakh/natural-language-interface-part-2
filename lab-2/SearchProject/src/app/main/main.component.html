@@ -1,0 +1,13 @@
+<div class="mb-2">
+  <app-info></app-info>
+</div>
+
+<form (ngSubmit)="AnalyzeFiles()">
+  <label class="form-label">Files:</label>
+  <input id="files" class="form-control mb-2" type="file" [disabled]="processing" required multiple>
+  <button type="submit" class="btn btn-primary" title="Analyze" [disabled]="processing">Analyze</button>
+</form>
+
+<!-- <div *ngFor="let doc of docs">
+  <app-doc-info [DocInfo]="doc"></app-doc-info>
+</div> -->
