@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +11,15 @@ export class AnalyzeService {
     private http: HttpClient
   ) { }
 
-  async File(file: File): Promise<any> {
-    console.log(file);
+  async File(files: FileList): Promise<any> {
+    let filesNames = Array.from(files).map(file => {
+      return file.name;
+    })
     
-    // return new Promise(resolve => {
-    //   let result = this.http.post(environment.SERVER_URL, file).toPromise();
-    //   result.then(function (responce: any) {
-    //     resolve("something");
-    //   });
-    // });
+    return new Promise(resolve => {
+      this.http.post<any>(environment.SERVER_URL, {files: filesNames}).toPromise().then((responce: any) => {
+        resolve(responce);
+      });
+    });
   }
 }

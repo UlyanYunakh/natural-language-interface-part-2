@@ -7,12 +7,13 @@ import { AnalyzeService } from '../analyze.service';
 })
 export class MainComponent {
   processing: boolean = false;
+  result: string = "";
 
   constructor(
     private analyze: AnalyzeService
   ) { }
 
-  AnalyzeFiles(): void {
+  async AnalyzeFiles(): Promise<void> {
     this.processing = true;
 
     let fileInput = <HTMLInputElement>document.querySelector("#files");
@@ -22,11 +23,9 @@ export class MainComponent {
       this.processing = false;
       return;
     }
-
-    Promise.all(Array.from(fileList).map((file): Promise<any> => {
-      return this.analyze.File(file);
-    })).then((results) => {
-      // something with result
+    
+    await this.analyze.File(fileList).then((result) => {
+      this.result += result;
       this.processing = false;
     });
   }

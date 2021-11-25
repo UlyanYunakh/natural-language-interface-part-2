@@ -4,10 +4,11 @@
 
 <form (ngSubmit)="AnalyzeFiles()">
   <label class="form-label">Files:</label>
-  <input id="files" class="form-control mb-2" type="file" [disabled]="processing" required multiple>
+  <input id="files" class="form-control mb-2" type="file" [disabled]="processing" required multiple accept=".html">
   <button type="submit" class="btn btn-primary" title="Analyze" [disabled]="processing">Analyze</button>
 </form>
 
-<!-- <div *ngFor="let doc of docs">
-  <app-doc-info [DocInfo]="doc"></app-doc-info>
-</div> -->
+<div *ngIf="result">
+  Log:
+  <pre>{{result}}</pre>
+</div>
