@@ -38,17 +38,17 @@ class PythonTextServer(BaseHTTPRequestHandler):
 
         grams_method = GramsMethod("docs/english.html", "docs/franch.html")
         responce += "Grams method:\n"
-        responce += "language of " + files[0] + ": " + grams_method.get_language(self.filePath(files[0])) + "\n"
-        responce += "language of " + files[1] + ": " + grams_method.get_language(self.filePath(files[1])) + "\n"
+        for file in files:
+            responce += "language of " + file + ": " + grams_method.get_language(self.filePath(file)) + "\n"
 
         alphabet_method = AlphabetMethod("docs/english.html", "docs/franch.html")
         responce += "Alphabet method:\n"
-        responce += "language of " + files[0] + ": " + alphabet_method.get_language(self.filePath(files[0])) + "\n"
-        responce += "language of " + files[1] + ": " + alphabet_method.get_language(self.filePath(files[1])) + "\n"
+        for file in files:
+            responce += "language of " + file + ": " + alphabet_method.get_language(self.filePath(file)) + "\n"
 
         responce += "Neural method:\n"
-        responce += "language of " + files[0] + ": " + NeuralMethod(self.filePath(files[0])).get_result + "\n"
-        responce += "language of " + files[1] + ": " + NeuralMethod(self.filePath(files[1])).get_result
+        for file in files:
+            responce += "language of " + file + ": " + NeuralMethod(self.filePath(file)).get_result + "\n"
 
         return json.dumps(responce, ensure_ascii=False)
     

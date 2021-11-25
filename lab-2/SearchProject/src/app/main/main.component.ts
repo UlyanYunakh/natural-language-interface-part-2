@@ -25,8 +25,12 @@ export class MainComponent {
     }
     
     await this.analyze.File(fileList).then((result) => {
-      this.result += result;
+      this.result += "\n" + result;
       this.processing = false;
     });
+  }
+
+  ClearLog(): void {
+    this.result = "";
   }
 }
