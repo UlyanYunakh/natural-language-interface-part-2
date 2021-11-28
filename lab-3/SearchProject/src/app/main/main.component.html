@@ -1,0 +1,15 @@
+<div class="mb-2">
+  <app-info></app-info>
+</div>
+
+<form (ngSubmit)="AnalyzeFiles()">
+  <label class="form-label">Files:</label>
+  <input id="files" class="form-control mb-2" type="file" [disabled]="processing" required multiple accept=".html">
+  <button type="submit" class="btn btn-primary" title="Analyze" [disabled]="processing">Analyze</button>
+  <button type="button" class="ms-1 btn btn-primary" title="Analyze" [disabled]="result == ''" (click)="ClearLog()">Clear</button>
+</form>
+
+<div class="bg-secondary text-white p-2 mt-2">
+  Log:
+  <pre *ngIf="result">{{result}}</pre>
+</div>
