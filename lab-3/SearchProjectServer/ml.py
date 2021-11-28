@@ -59,8 +59,6 @@ def summarize(name, text, lang):
     article = data.split(". ")
     sentences = []
     for sentence in article:
-        print(sentence)
-        print("-------------")
         sentences.append(sentence.replace("[^a-zA-Z]", " ").split(" "))
     sentences.pop()
 
@@ -72,4 +70,4 @@ def summarize(name, text, lang):
     for i in range(3):
         summarize.append(" ".join(rankedSentences[i][1]))
 
-    return "\n\n\n" + name + ". ".join(summarize)
+    return "\nSummary of " + name + ":\n" + "".join(summarize) + "."

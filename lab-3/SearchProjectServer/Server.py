@@ -35,12 +35,12 @@ class PythonTextServer(BaseHTTPRequestHandler):
 
     def getResponce(self, files):
         responce = ""
-        # responce += "TF-IDF method:\n"
-        # for file in files:
-        #     print(ftidfSummarize(file["name"], file["data"], file["lang"]))
-        #     responce += ftidfSummarize(file["name"], file["data"], file["lang"]) + "\n"
+        responce += "TF-IDF method:\n"
+        for file in files:
+            print(ftidfSummarize(file["name"], file["data"], file["lang"]))
+            responce += ftidfSummarize(file["name"], file["data"], file["lang"]) + "\n"
 
-        responce += "ML method:\n"
+        responce += "\nML method:\n"
         for file in files:
             responce += mlSummarize(file["name"], file["data"], file["lang"]) + "\n"
 
