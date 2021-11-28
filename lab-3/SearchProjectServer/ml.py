@@ -51,7 +51,7 @@ def build_similarity_matrix(sentences, stop_words):
     return similarity_matrix
 
 
-def generate_summary(file_name, lang, top_n=3):
+def summarize(file_name, lang, top_n=3):
     stop_words = stopwords.words(lang)
     summarize_text = []
     sentences = read_doc(file_name)
@@ -66,10 +66,3 @@ def generate_summary(file_name, lang, top_n=3):
 
     print(". ".join(summarize_text))
     print("\n")
-
-
-for path in os.listdir("english_docs"):
-    generate_summary(f"english_docs/{path}", 'german')
-
-for path in os.listdir("french_docs"):
-    generate_summary(f"french_docs/{path}", 'french')
