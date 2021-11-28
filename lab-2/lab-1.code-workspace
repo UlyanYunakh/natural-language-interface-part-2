@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "SearchProject"
+		},
+		{
+			"path": "SearchProjectServer"
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
+}
