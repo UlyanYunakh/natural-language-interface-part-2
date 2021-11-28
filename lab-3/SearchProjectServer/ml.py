@@ -39,7 +39,7 @@ def sentence_similarity(sent1, sent2, stop_words=None):
     return 1 - cosine_distance(vector1, vector2)
 
 
-def build_similarity_matrix(sentences, stop_words):
+def getSimilarityMatrix(sentences, stop_words):
     similarity_matrix = np.zeros((len(sentences), len(sentences)))
 
     for idx1 in range(len(sentences)):
@@ -51,25 +51,23 @@ def build_similarity_matrix(sentences, stop_words):
     return similarity_matrix
 
 
-def generate_summary(file_name, lang, top_n=3):
-    stop_words = stopwords.words(lang)
-    summarize_text = []
-    sentences = read_doc(file_name)
-    smilarity_matrix = build_similarity_matrix(sentences, stop_words)
-    similarity_graph = nx.from_numpy_array(smilarity_matrix)
-    scores = nx.pagerank(similarity_graph)
-    ranked_sentences = sorted(
-        ((scores[i], s) for i, s in enumerate(sentences)), reverse=True)
+def summarize(name, text, lang):
+    stopWords = stopwords.words(lang)
+    summarize = []
 
-    for i in range(top_n):
-        summarize_text.append(" ".join(ranked_sentences[i][1]))
+    filedata = " ".join(text).replace("\n", "")
+    article = filedata.split(". ")
+    sentences = []
+    for sentence in article:
+        sentences.append(sentence.replace("[^a-zA-Z]", " ").split(" "))
+    sentences.pop()
 
-    print(". ".join(summarize_text))
-    print("\n")
+    similarityMatrix = getSimilarityMatrix(sentences, stopWords)
+    similarityGraph = nx.from_numpy_array(similarityMatrix)
+    scores = nx.pagerank(similarityGraph)
+    rankedSentences = sorted(((scores[i], s) for i, s in enumerate(sentences)), reverse=True)
 
+    for i in range(3):
+        summarize.append(" ".join(rankedSentences[i][1]))
 
-for path in os.listdir("english_docs"):
-    generate_summary(f"english_docs/{path}", 'german')
-
-for path in os.listdir("french_docs"):
-    generate_summary(f"french_docs/{path}", 'french')
+    return ". ".join(summarize)

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AnalyzeService } from '../analyze.service';
+import { SummaryService } from '../summary.service';
 
 @Component({
   selector: 'app-main',
@@ -10,7 +10,7 @@ export class MainComponent {
   result: string = "";
 
   constructor(
-    private analyze: AnalyzeService
+    private summary: SummaryService
   ) { }
 
   async AnalyzeFiles(): Promise<void> {
@@ -23,8 +23,8 @@ export class MainComponent {
       this.processing = false;
       return;
     }
-    
-    await this.analyze.File(fileList).then((result) => {
+
+    await this.summary.Files(fileList).then((result) => {
       this.result += "\n" + result;
       this.processing = false;
     });
