@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from GramsMethod import GramsMethod
-from NeuralMethod import NeuralMethod
-from AlphabetMethod import AlphabetMethod
+from TFIDF import summarize as ftidfSummarize
+from ml import summarize as mlSummarize
 import json
 
 hostName = 'localhost'
@@ -30,30 +29,22 @@ class PythonTextServer(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', '*')
         self.send_header('Access-Control-Allow-Headers', '*')
-        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate')
+        self.send_header(
+            'Cache-Control', 'no-store, no-cache, must-revalidate')
         return super(PythonTextServer, self).end_headers()
 
-    def getResponce(self, files): 
+    def getResponce(self, files):
         responce = ""
-
-        grams_method = GramsMethod("docs/english.html", "docs/franch.html")
-        responce += "Grams method:\n"
+        responce += "TF-IDF method:\n"
         for file in files:
-            responce += "language of " + file + ": " + grams_method.get_language(self.filePath(file)) + "\n"
+            print(ftidfSummarize(file["name"], file["data"], file["lang"]))
+            responce += ftidfSummarize(file["name"], file["data"], file["lang"]) + "\n"
 
-        alphabet_method = AlphabetMethod("docs/english.html", "docs/franch.html")
-        responce += "Alphabet method:\n"
+        responce += "\nML method:\n"
         for file in files:
-            responce += "language of " + file + ": " + alphabet_method.get_language(self.filePath(file)) + "\n"
-
-        responce += "Neural method:\n"
-        for file in files:
-            responce += "language of " + file + ": " + NeuralMethod(self.filePath(file)).get_result + "\n"
+            responce += mlSummarize(file["name"], file["data"], file["lang"]) + "\n"
 
         return json.dumps(responce, ensure_ascii=False)
-    
-    def filePath(self, file):
-        return "docs/" + file
 
 
 if __name__ == '__main__':

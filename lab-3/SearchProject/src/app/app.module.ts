@@ -7,14 +7,12 @@ import { AppComponent } from './app.component';
 import { MainComponent } from './main/main.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AppInfoComponent } from './app-info/app-info.component';
-import { DocInfoComponent } from './doc-info/doc-info.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MainComponent,
-    AppInfoComponent,
-    DocInfoComponent
+    AppInfoComponent
   ],
   imports: [
     BrowserModule,
