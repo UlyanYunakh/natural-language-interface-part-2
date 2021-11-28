@@ -55,10 +55,12 @@ def summarize(name, text, lang):
     stopWords = stopwords.words(lang)
     summarize = []
 
-    filedata = " ".join(text).replace("\n", "")
-    article = filedata.split(". ")
+    data = "".join(text).replace("\n", "")
+    article = data.split(". ")
     sentences = []
     for sentence in article:
+        print(sentence)
+        print("-------------")
         sentences.append(sentence.replace("[^a-zA-Z]", " ").split(" "))
     sentences.pop()
 
@@ -70,4 +72,4 @@ def summarize(name, text, lang):
     for i in range(3):
         summarize.append(" ".join(rankedSentences[i][1]))
 
-    return ". ".join(summarize)
+    return "\n\n\n" + name + ". ".join(summarize)
