@@ -70,4 +70,4 @@ def summarize(name, text, lang):
     for i in range(3):
         summarize.append(" ".join(rankedSentences[i][1]))
 
-    return "\nSummary of " + name + ":\n" + "".join(summarize) + "."
+    return "\nSummary of file " + name + ":\n" + "".join(summarize) + "."

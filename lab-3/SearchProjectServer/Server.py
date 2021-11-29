@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from TFIDF import summarize as ftidfSummarize
-from ml import summarize as mlSummarize
+from docs.TFIDF import summarize as ftidfSummarize
+from ML import summarize as mlSummarize
 import json
 
 hostName = 'localhost'

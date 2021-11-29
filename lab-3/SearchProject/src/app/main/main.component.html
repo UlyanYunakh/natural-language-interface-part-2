@@ -2,10 +2,10 @@
   <app-info></app-info>
 </div>
 
-<form (ngSubmit)="AnalyzeFiles()">
+<form (ngSubmit)="SummarizeFiles()">
   <label class="form-label">Files:</label>
   <input id="files" class="form-control mb-2" type="file" [disabled]="processing" required multiple>
-  <button type="submit" class="btn btn-primary" title="Analyze" [disabled]="processing">Analyze</button>
+  <button type="submit" class="btn btn-primary" title="Analyze" [disabled]="processing">Summarize</button>
   <button type="button" class="ms-1 btn btn-primary" title="Analyze" [disabled]="result == ''" (click)="ClearLog()">Clear</button>
 </form>
 

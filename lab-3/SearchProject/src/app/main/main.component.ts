@@ -13,7 +13,7 @@ export class MainComponent {
     private summary: SummaryService
   ) { }
 
-  async AnalyzeFiles(): Promise<void> {
+  async SummarizeFiles(): Promise<void> {
     this.processing = true;
 
     let fileInput = <HTMLInputElement>document.querySelector("#files");
