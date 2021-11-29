@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from docs.TFIDF import summarize as ftidfSummarize
+from TFIDF import summarize as ftidfSummarize
 from ML import summarize as mlSummarize
 import json
 
@@ -37,7 +37,6 @@ class PythonTextServer(BaseHTTPRequestHandler):
         responce = ""
         responce += "TF-IDF method:\n"
         for file in files:
-            print(ftidfSummarize(file["name"], file["data"], file["lang"]))
             responce += ftidfSummarize(file["name"], file["data"], file["lang"]) + "\n"
 
         responce += "\nML method:\n"

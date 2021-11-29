@@ -2,20 +2,6 @@ from nltk.corpus import stopwords
 from nltk.cluster.util import cosine_distance
 import numpy as np
 import networkx as nx
-import os
-
-
-def read_doc(file_name):
-    file = open(file_name, "r",encoding="utf8")
-    filedata = file.readlines()
-    filedata = " ".join(filedata).replace("\n", "")
-    article = filedata.split(". ")
-    sentences = []
-    for sentence in article:
-        sentences.append(sentence.replace("[^a-zA-Z]", " ").split(" "))
-    sentences.pop()
-    return sentences
-
 
 def sentence_similarity(sent1, sent2, stop_words=None):
     if stop_words is None:
