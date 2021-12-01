@@ -1,0 +1,44 @@
+<div class="mb-2">
+  <app-info></app-info>
+</div>
+
+<form (ngSubmit)="TextToVoice()" class="mb-3">
+  <label for="query" class="form-label">Text:</label>
+  <textarea id="query" class="form-control mb-2" style="height: 200px;" placeholder="Type here..."
+    [formControl]="textControl"></textarea>
+  <button type="submit" class="btn btn-primary" title="Analyze">Speak</button>
+  <button type="button" class="btn ms-1" title="Pause" (click)="stop()"><img width="20"
+      src="https://img.icons8.com/ios/50/000000/stop.png" /></button>
+  <button type="button" class="btn ms-1" title="Pause" (click)="pause()"><img width="20"
+      src="https://img.icons8.com/ios/50/000000/pause--v1.png" /></button>
+  <button type="button" class="btn ms-1" title="Pause" (click)="resume()"><img width="20"
+      src="https://img.icons8.com/ios/50/000000/play--v1.png" /></button>
+</form>
+
+<div>
+  <div class="mb-1 d-flex justify-content-between">
+    <h4>
+      Options:
+    </h4>
+    <button type="button" class="btn btn-primary" title="Save" (click)="setUtterProperties()">Save</button>
+  </div>
+  <div class="mb-1">
+    <label for="pitchRange" class="form-label">Pitch:</label>
+    <input type="range" class="form-range" min="0" max="2" step="0.2" id="pitchRange" [formControl]="picthControl">
+  </div>
+  <div class="mb-1">
+    <label for="rateRange" class="form-label">Rate:</label>
+    <input type="range" class="form-range" min="0.5" max="3.5" step="0.01" id="rateRange" [formControl]="rateControl">
+  </div>
+  <div class="mb-1">
+    <label for="volumeRange" class="form-label">Volume:</label>
+    <input type="range" class="form-range" min="0" max="1" step="0.1" id="volumeRange" [formControl]="volumeControl">
+  </div>
+  <div class="mb-1">
+    <label for="voice" class="form-label">Voice:</label>
+    <select class="form-control" id="voice" [formControl]="voiceControl">
+      <option value="0">Milena</option>
+      <option value="1">Yuri</option>
+    </select>
+  </div>
+</div>
