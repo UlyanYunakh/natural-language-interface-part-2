@@ -1,0 +1,94 @@
+@page "/"
+@inject DialogService service
+@inject IJSRuntime JS
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="chat">
+            @if (_messages.Count == 0)
+            {
+                <div class="message message-hint">
+                    Напишите сообщение
+                </div>
+            }
+            @foreach ((int, string) message in _messages)
+            {
+                if (message.Item1 == 0)
+                {
+                    <div class="message message-system">
+                        @message.Item2
+                    </div>
+                }
+                else
+                {
+                    <div class="message message-user">
+                        @message.Item2
+                    </div>
+                }
+            }
+        </div>
+        <EditForm Model="@_text" OnValidSubmit="@Send" class="form">
+            <div class="row m-2 g-3 align-items-center">
+                <div class="col-10">
+                    <InputText @bind-Value="_text" id="text" class="col-11 form-control border border-primary">
+                    </InputText>
+                </div>
+                <button type="submit" class="col-1 btn">
+                    <span class="oi oi-share"></span>
+                </button>
+                <button type="button" class="col-1 btn" @onclick="RecognizeVoice">
+                    <span class="oi oi-microphone"></span>
+                </button>
+            </div>
+        </EditForm>
+    </div>
+    <div class="col-md-4">
+        <h1 class="text-primary">#я_голодный</h1>
+        <h2>Спросите вопрос</h2>
+        <p>Вы хотите что-то приготовить но не знаете что именно? Спросите вопрос, и мы попытаемся дать вам идею для
+            блюда</p>
+        <h2>Какими могут быть идеи?</h2>
+        <p>Система может вам дать идею для приготавления блюд. Также она может дать идею для приготовления завтрака,
+            обеда или ужина.
+        </p>
+    </div>
+</div>
+
+@code{
+    private string _text = "";
+    private List<(int, string)> _messages = new List<(int, string)>();
+
+    private void Send()
+    {
+        if (_text == "")
+            return;
+        _messages.Reverse();
+        _messages.Add((1, _text));
+        _messages.Reverse();
+        GetDialogResponce(_text);
+        _text = "";
+    }
+
+    public async void GetDialogResponce(string request)
+    {
+        string responce = await service.GetResponce(request);
+        if (responce != null)
+        {
+            _messages.Reverse();
+            _messages.Add((0, responce));
+            _messages.Reverse();
+            StateHasChanged();
+        }
+    }
+
+    public async void RecognizeVoice()
+    {
+        var text = await JS.InvokeAsync<string>("recognizeVoice");
+        if (text == "")
+            return;
+        _messages.Reverse();
+        _messages.Add((1, text));
+        _messages.Reverse();
+        GetDialogResponce(text);
+    }
+}

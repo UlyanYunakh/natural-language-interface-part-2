@@ -122,7 +122,7 @@ def summarize(name, text, lang):
 
     average = (sumValues / len(sentenceScores))
 
-    summary = "\nSummary of " + name + ":\nWords: "
+    summary = "\nSummary of file " + name + ":\nWords: "
     for word in words:
         summary += word + " "
     summary += "\nSentences: "
