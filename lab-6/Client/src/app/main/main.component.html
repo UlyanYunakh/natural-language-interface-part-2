@@ -13,6 +13,10 @@
     <textarea class="form-control" id="text" [formControl]="textControl" required></textarea>
   </div>
   <button type="submit" class="btn btn-primary" title="Translate" [disabled]="processing">Translate</button>
+  <button type="button" class="btn ms-3" title="Speak" [disabled]="translatedText == ''"
+    (click)="speak(translatedText)"><img width="20" src="https://img.icons8.com/ios/50/000000/speaker.png"/></button>
+  <button type="button" class="btn ms-1" title="Cancel" [disabled]="translatedText == ''" (click)="stop()"><img width="20"
+      src="https://img.icons8.com/ios/50/000000/stop.png" /></button>
 </form>
 
 <div class="mb-3">
@@ -20,9 +24,9 @@
 </div>
 
 <div class="mb-2">
-  <button type="submit" class="btn btn-primary" title="Translate" [disabled]="processing || translatedText == ''"
+  <button type="submit" class="btn btn-primary" title="Words" [disabled]="processing || translatedText == ''"
     (click)="Words()">Words</button>
-  <button type="submit" class="btn btn-primary ms-1" title="Translate" [disabled]="processing || translatedText == ''"
+  <button type="submit" class="btn btn-primary ms-1" title="Tree" [disabled]="processing || translatedText == ''"
     (click)="Trees()">Tree</button>
 </div>
 

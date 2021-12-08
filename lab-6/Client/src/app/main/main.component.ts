@@ -22,9 +22,13 @@ export class MainComponent {
   treeFlag: boolean = false;
   processing: boolean = false;
 
+  readonly SYNTH: SpeechSynthesis;
+
   constructor(
     private summary: TranslateService
-  ) { }
+  ) {
+    this.SYNTH = window.speechSynthesis;
+  }
 
   async Translate(): Promise<void> {
     this.processing = true;
@@ -54,7 +58,7 @@ export class MainComponent {
       langObj.from
     ).then((result) => {
       this.words = result.translationByWords;
-      this.words.sort((a,b)=> (a.frequency < b.frequency ? 1 : -1));
+      this.words.sort((a, b) => (a.frequency < b.frequency ? 1 : -1));
       this.wordsFlag = true;
       this.processing = false;
     });
@@ -75,6 +79,19 @@ export class MainComponent {
       this.treeFlag = true;
       this.processing = false;
     });
+  }
+
+  speak(text: string): void {
+    let utter = new SpeechSynthesisUtterance(text);
+    let lang = this.getLang().to == "fr" ? "fr-FR" : "en-EN";
+    utter.voice = this.SYNTH.getVoices().filter((voice) => voice.lang == lang)[0];
+    this.SYNTH.speak(utter);
+  }
+
+  stop(): void {
+    if (this.SYNTH.speaking) {
+      this.SYNTH.cancel();
+    }
   }
 
   private getLang(): { to: string, from: string } {
