@@ -1,0 +1,59 @@
+<div class="mb-2">
+  <app-info></app-info>
+</div>
+
+<form class="mb-2" (ngSubmit)="Translate()">
+  <div class="mb-2">
+    <select class="form-control" id="translation" [formControl]="translationControl" required>
+      <option value="0">English to French</option>
+      <option value="1">French to English</option>
+    </select>
+  </div>
+  <div class="mb-2">
+    <textarea class="form-control" id="text" [formControl]="textControl" required></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary" title="Translate" [disabled]="processing">Translate</button>
+</form>
+
+<div class="mb-3">
+  <textarea class="form-control" id="translatedText" disabled>{{translatedText}}</textarea>
+</div>
+
+<div class="mb-2">
+  <button type="submit" class="btn btn-primary" title="Translate" [disabled]="processing || translatedText == ''"
+    (click)="Words()">Words</button>
+  <button type="submit" class="btn btn-primary ms-1" title="Translate" [disabled]="processing || translatedText == ''"
+    (click)="Trees()">Tree</button>
+</div>
+
+<div *ngIf="wordsFlag">
+  <div class="row">
+    <h4 class="col-5">Word</h4>
+    <h4 class="col-5">Translation</h4>
+    <h4 class="col-2">Frequency</h4>
+  </div>
+  <div *ngFor="let word of words" class="row">
+    <div class="col-5">
+      {{word.word}}
+    </div>
+    <div class="col-5">
+      {{word.translation}}
+    </div>
+    <div class="col-2">
+      {{word.frequency}}
+    </div>
+  </div>
+</div>
+
+<div *ngIf="treeFlag">
+  <div *ngFor="let item of trees" class="mb-2">
+    <label>{{item.sent}}</label>
+    <pre class="bg-secondary p-2 text-light">{{item.tree}}</pre>
+  </div>
+</div>
+
+<!-- <button type="button" class="ms-1 btn btn-primary" title="Analyze" [disabled]="log == ''" (click)="ClearLog()">Clear</button>
+<div class="mt-2">
+  Log:
+  <pre class='bg-secondary text-white p-2' *ngIf="log" style="white-space: pre-wrap;">{{log}}</pre>
+</div> -->
