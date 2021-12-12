@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "SearchProject"
+		},
+		{
+			"path": "SearchProjectServer"
+		},
+		{
+			"path": "docs"
+		}
+	],
+	"settings": {}
+}
