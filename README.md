@@ -9,3 +9,4 @@
 
 Отчет по лабораторной работе №4-5: https://docs.google.com/document/d/153I7jgTMUKfR46vuJMYvjDcBPsBhiZVXYLfNi7wZS-w/edit?usp=sharing
 
+Отчет по лабораторной работе №6: https://docs.google.com/document/d/1n3LukW-I8RM0j-6aLSkA9hSmemnS6LGQ_CC4HN096Wk/edit?usp=sharing
